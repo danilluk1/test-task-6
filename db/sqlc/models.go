@@ -10,11 +10,11 @@ import (
 )
 
 type Product struct {
-	ID        int32          `json:"id"`
-	Name      string         `json:"name"`
-	Links     []string       `json:"links"`
-	Price     sql.NullString `json:"price"`
-	CreatedAt time.Time      `json:"created_at"`
+	ID        int32     `json:"id"`
+	Name      string    `json:"name"`
+	Links     []string  `json:"links"`
+	Price     string    `json:"price"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ProductsCategory struct {
@@ -25,8 +25,8 @@ type ProductsCategory struct {
 }
 
 type ProductsProductsCategory struct {
-	ProductCategoryID sql.NullInt32 `json:"product_category_id"`
-	ProductID         sql.NullInt32 `json:"product_id"`
+	ProductCategoryID int32 `json:"product_category_id"`
+	ProductID         int32 `json:"product_id"`
 }
 
 type Shop struct {

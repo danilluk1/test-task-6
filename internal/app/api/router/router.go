@@ -19,6 +19,28 @@ func Setup(app *api.App) *chi.Mux {
 			return middlewares.ValidateAndAttachBody(handler, app, &products.CreateProductReq{})
 		}).Post("/", products.CreateProduct(app))
 		// r.Delete("/{id}", products.RemoveProduct(app))
+
+		r.Route("/categories", func(r chi.Router) {
+			r.Get("/", products.GetCategories(app))
+			r.With(func(handler http.Handler) http.Handler {
+				return middlewares.ValidateAndAttachBody(handler, app, &products.CreateCategoryReq{})
+			})
+		})
+	})
+
+	router.Route("/shops", func(r chi.Router) {
+		r.Get("/", shops.GetShops(app))
+		r.Get("/{id}", shops.GetShop(app))
+		r.With(func(handler http.Handler) http.Handler {
+			return middlewares.ValidateAndAttachBody(handler, app, &shops.CreateShopReq{})
+		})
+
+		r.Route("/categories", func(r chi.Router) {
+			r.Get("/", shops.GetCategories)
+			r.With(func(handler http.Handler) http.Handler {
+				return middlewares.ValidateAndAttachBody(handler, app, &shops.CreateCategoryReq{})
+			})
+		})
 	})
 
 	return router

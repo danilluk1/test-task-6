@@ -129,3 +129,6 @@ func GetProducts(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 		w.Write(data)
 	}
 }
+
+type CreateCategoryReq struct {
+}

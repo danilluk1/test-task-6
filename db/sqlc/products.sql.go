@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/lib/pq"
 )
@@ -23,9 +22,9 @@ INSERT INTO products (
 `
 
 type CreateProductParams struct {
-	Name  string         `json:"name"`
-	Links []string       `json:"links"`
-	Price sql.NullString `json:"price"`
+	Name  string   `json:"name"`
+	Links []string `json:"links"`
+	Price string   `json:"price"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {

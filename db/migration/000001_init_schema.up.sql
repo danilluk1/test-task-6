@@ -32,7 +32,7 @@ CREATE TABLE "products" (
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
   "links" varchar[],
-  "price" decimal,
+  "price" decimal NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 

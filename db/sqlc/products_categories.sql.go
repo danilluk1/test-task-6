@@ -7,14 +7,13 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const deleteProductsCategoriesRelationshipByProductCategoryId = `-- name: DeleteProductsCategoriesRelationshipByProductCategoryId :exec
 DELETE FROM products_products_categories WHERE product_category_id = $1
 `
 
-func (q *Queries) DeleteProductsCategoriesRelationshipByProductCategoryId(ctx context.Context, productCategoryID sql.NullInt32) error {
+func (q *Queries) DeleteProductsCategoriesRelationshipByProductCategoryId(ctx context.Context, productCategoryID int32) error {
 	_, err := q.db.ExecContext(ctx, deleteProductsCategoriesRelationshipByProductCategoryId, productCategoryID)
 	return err
 }
@@ -23,7 +22,7 @@ const deleteProductsCategoriesRelationshipByProductId = `-- name: DeleteProducts
 DELETE FROM products_products_categories WHERE product_id = $1
 `
 
-func (q *Queries) DeleteProductsCategoriesRelationshipByProductId(ctx context.Context, productID sql.NullInt32) error {
+func (q *Queries) DeleteProductsCategoriesRelationshipByProductId(ctx context.Context, productID int32) error {
 	_, err := q.db.ExecContext(ctx, deleteProductsCategoriesRelationshipByProductId, productID)
 	return err
 }
@@ -38,8 +37,8 @@ INSERT INTO products_products_categories(
 `
 
 type InsertNewProductsCategoriesRelationshipParams struct {
-	ProductCategoryID sql.NullInt32 `json:"product_category_id"`
-	ProductID         sql.NullInt32 `json:"product_id"`
+	ProductCategoryID int32 `json:"product_category_id"`
+	ProductID         int32 `json:"product_id"`
 }
 
 func (q *Queries) InsertNewProductsCategoriesRelationship(ctx context.Context, arg InsertNewProductsCategoriesRelationshipParams) (ProductsProductsCategory, error) {

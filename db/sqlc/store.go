@@ -60,7 +60,7 @@ func (store *SQLStore) ProductTx(ctx context.Context, arg ProductTxParams) (Prod
 		product, err := q.CreateProduct(ctx, CreateProductParams{
 			Name:  arg.Name,
 			Links: arg.Links,
-			Price: sql.NullString{String: arg.Price.String()},
+			Price: arg.Price.String(),
 		})
 		if err != nil {
 			return err
@@ -68,8 +68,8 @@ func (store *SQLStore) ProductTx(ctx context.Context, arg ProductTxParams) (Prod
 
 		for _, category := range arg.ProductsCategories {
 			_, err = q.InsertNewProductsCategoriesRelationship(ctx, InsertNewProductsCategoriesRelationshipParams{
-				ProductCategoryID: sql.NullInt32{Int32: category, Valid: true},
-				ProductID:         sql.NullInt32{Int32: product.ID, Valid: true},
+				ProductCategoryID: category,
+				ProductID:         product.ID,
 			})
 			if err != nil {
 				return err
