@@ -17,6 +17,7 @@ CREATE TABLE "shops" (
 );
 
 CREATE TABLE "products_categories" (
+  "shop_id" int,
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
   "link" varchar
@@ -42,6 +43,8 @@ CREATE INDEX ON "products" ("id");
 ALTER TABLE "shops_shops_categories" ADD FOREIGN KEY ("shop_category_id") REFERENCES "shops_categories" ("id");
 
 ALTER TABLE "shops_shops_categories" ADD FOREIGN KEY ("shop_id") REFERENCES "shops" ("id");
+
+ALTER TABLE "products_categories" ADD FOREIGN KEY ("shop_id") REFERENCES "shops" ("id");
 
 ALTER TABLE "products_products_categories" ADD FOREIGN KEY ("product_category_id") REFERENCES "products" ("id");
 

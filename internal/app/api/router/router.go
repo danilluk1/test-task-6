@@ -16,7 +16,7 @@ func Setup(app *api.App) *chi.Mux {
 		r.Get("/", products.GetProducts(app))
 		r.Get("/{id}", products.GetProduct(app))
 		r.With(func(handler http.Handler) http.Handler {
-			return middlewares.ValidateAndAttachBody(handler, app, products.CreateProduct{})
+			return middlewares.ValidateAndAttachBody(handler, app, products.CreateProductReq{})
 		}).Post("/", products.CreateProduct(app))
 		r.Delete("/{id}", products.RemoveProduct(app))
 
