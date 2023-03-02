@@ -10,6 +10,7 @@ import (
 	"github.com/danilluk1/test-task-6/internal/app/api"
 	"github.com/danilluk1/test-task-6/internal/app/api/api_errors"
 	"github.com/go-chi/chi/v5"
+	"github.com/lib/pq"
 	"github.com/shopspring/decimal"
 )
 
@@ -28,20 +29,27 @@ func CreateProduct(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write(response)
 			return
-			return
 		}
-
-		product, err := app.Store.CreateProduct(r.Context(), db.CreateProductParams{
-			Name:  dto.Name,
-			Links: dto.Links,
-			Price: sql.NullString{String: dto.Price.String()},
+		_, err := app.Store.ProductTx(r.Context(), db.ProductTxParams{
+			Name:               dto.Name,
+			Price:              dto.Price,
+			ProductsCategories: dto.ProductsCategories,
+			Links:              dto.Links,
 		})
 		if err != nil {
 			app.Logger.Error(err)
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code.Name() {
+				case "foreign_key_violation", "unique_violation", "not_null_violation":
+					response := api_errors.CreateBadRequestError([]string{"wrong products categories"})
+					w.WriteHeader(http.StatusBadRequest)
+					w.Write(response)
+					return
+				}
+			}
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-
 	}
 }
 

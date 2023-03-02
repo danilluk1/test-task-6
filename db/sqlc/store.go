@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/danilluk1/test-task-6/internal/app/api/handlers/products"
+	"github.com/shopspring/decimal"
 )
 
 type Store interface {
@@ -26,7 +26,10 @@ func NewStore(db *sql.DB) Store {
 }
 
 type ProductTxParams struct {
-	Product products.CreateProductReq
+	Name               string          `json:"name"`
+	Price              decimal.Decimal `json:"price"`
+	ProductsCategories []int32         `json:"products_categories"`
+	Links              []string        `json:"links"`
 }
 
 type ProductTxResult struct {
@@ -46,14 +49,35 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 		}
 		return err
 	}
+
+	return tx.Commit()
 }
 
 func (store *SQLStore) ProductTx(ctx context.Context, arg ProductTxParams) (ProductTxResult, error) {
-	var result ProductTxResult
 
-	err := store.execTx(ctx, func(q *Querier) error {
+	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
+		product, err := q.CreateProduct(ctx, CreateProductParams{
+			Name:  arg.Name,
+			Links: arg.Links,
+			Price: sql.NullString{String: arg.Price.String()},
+		})
+		if err != nil {
+			return err
+		}
 
-		_, err := q
+		for _, category := range arg.ProductsCategories {
+			_, err = q.InsertNewProductsCategoriesRelationship(ctx, InsertNewProductsCategoriesRelationshipParams{
+				ProductCategoryID: sql.NullInt32{Int32: category, Valid: true},
+				ProductID:         sql.NullInt32{Int32: product.ID, Valid: true},
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	})
+
+	return ProductTxResult{}, err
 }

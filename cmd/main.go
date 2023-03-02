@@ -13,6 +13,7 @@ import (
 	db "github.com/danilluk1/test-task-6/db/sqlc"
 	"github.com/danilluk1/test-task-6/internal/app/api"
 	router "github.com/danilluk1/test-task-6/internal/app/api/router"
+	loggerimpl "github.com/danilluk1/test-task-6/internal/services/logger/impl"
 )
 
 func main() {
@@ -28,7 +29,8 @@ func main() {
 	store := db.NewStore(conn)
 
 	app := &api.App{
-		Store: store,
+		Store:  store,
+		Logger: loggerimpl.NewLogger(),
 	}
 
 	router := router.Setup(app)

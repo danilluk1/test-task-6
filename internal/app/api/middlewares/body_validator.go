@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"reflect"
@@ -11,6 +12,7 @@ import (
 	"github.com/danilluk1/test-task-6/internal/app/api"
 	"github.com/danilluk1/test-task-6/internal/app/api/api_errors"
 	"github.com/go-playground/locales/en_US"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
 )
@@ -43,7 +45,7 @@ func ValidateAndAttachBody(next http.Handler, app *api.App, dto any) http.Handle
 		}
 
 		if err := json.Unmarshal(body, dto); err != nil {
-			app.Logger.Error(err)
+			fmt.Println(err)
 			http.Error(w, "Can't read body", http.StatusBadRequest)
 		}
 

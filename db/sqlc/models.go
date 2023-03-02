@@ -18,9 +18,10 @@ type Product struct {
 }
 
 type ProductsCategory struct {
-	ID   int32          `json:"id"`
-	Name string         `json:"name"`
-	Link sql.NullString `json:"link"`
+	ShopID sql.NullInt32  `json:"shop_id"`
+	ID     int32          `json:"id"`
+	Name   string         `json:"name"`
+	Link   sql.NullString `json:"link"`
 }
 
 type ProductsProductsCategory struct {

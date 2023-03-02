@@ -6,7 +6,7 @@ import (
 )
 
 type AppConfig struct {
-	DbConn string `env:"DB_CONN" env-default:"postgres://postgres:admin@localhost:5432/test_task_6"`
+	DbConn string `env:"DB_CONN" env-default:"postgres://postgres:admin@localhost:5432/test_task_6?sslmode=disable"`
 	AppEnv string `env:"APP_ENV"    env-default:"development"`
 }
 

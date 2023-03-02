@@ -24,8 +24,8 @@ CREATE TABLE "products_categories" (
 );
 
 CREATE TABLE "products_products_categories" (
-  "product_category_id" int,
-  "product_id" int
+  "product_category_id" int NOT NULL,
+  "product_id" int NOT NULL
 );
 
 CREATE TABLE "products" (
