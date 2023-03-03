@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createShopCategory = `-- name: CreateShopCategory :one
@@ -20,8 +19,8 @@ INSERT INTO shops_categories (
 `
 
 type CreateShopCategoryParams struct {
-	Name string         `json:"name"`
-	Link sql.NullString `json:"link"`
+	Name string `json:"name"`
+	Link string `json:"link"`
 }
 
 func (q *Queries) CreateShopCategory(ctx context.Context, arg CreateShopCategoryParams) (ShopsCategory, error) {

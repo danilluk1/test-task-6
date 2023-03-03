@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createShop = `-- name: CreateShop :one
@@ -20,8 +19,8 @@ INSERT INTO shops (
 `
 
 type CreateShopParams struct {
-	Name string         `json:"name"`
-	Link sql.NullString `json:"link"`
+	Name string `json:"name"`
+	Link string `json:"link"`
 }
 
 func (q *Queries) CreateShop(ctx context.Context, arg CreateShopParams) (Shop, error) {

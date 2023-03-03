@@ -10,12 +10,15 @@ import (
 
 type Querier interface {
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
+	CreateProductsCategory(ctx context.Context, arg CreateProductsCategoryParams) (ProductsCategory, error)
 	CreateShop(ctx context.Context, arg CreateShopParams) (Shop, error)
 	CreateShopCategory(ctx context.Context, arg CreateShopCategoryParams) (ShopsCategory, error)
 	DeleteProduct(ctx context.Context, id int32) error
 	DeleteProductsCategoriesRelationshipByProductCategoryId(ctx context.Context, productCategoryID int32) error
 	DeleteProductsCategoriesRelationshipByProductId(ctx context.Context, productID int32) error
+	DeleteProductsCategory(ctx context.Context, id int32) error
 	GetProduct(ctx context.Context, id int32) (Product, error)
+	GetProductsCategories(ctx context.Context, arg GetProductsCategoriesParams) ([]ProductsCategory, error)
 	GetShop(ctx context.Context, id int32) (Shop, error)
 	GetShopCategory(ctx context.Context, id int32) (ShopsCategory, error)
 	InsertNewProductsCategoriesRelationship(ctx context.Context, arg InsertNewProductsCategoriesRelationshipParams) (ProductsProductsCategory, error)

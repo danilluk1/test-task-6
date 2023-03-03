@@ -18,10 +18,10 @@ type Product struct {
 }
 
 type ProductsCategory struct {
-	ShopID sql.NullInt32  `json:"shop_id"`
-	ID     int32          `json:"id"`
-	Name   string         `json:"name"`
-	Link   sql.NullString `json:"link"`
+	ShopID int32  `json:"shop_id"`
+	ID     int32  `json:"id"`
+	Name   string `json:"name"`
+	Link   string `json:"link"`
 }
 
 type ProductsProductsCategory struct {
@@ -30,16 +30,16 @@ type ProductsProductsCategory struct {
 }
 
 type Shop struct {
-	ID        int32          `json:"id"`
-	Name      string         `json:"name"`
-	Link      sql.NullString `json:"link"`
-	CreatedAt time.Time      `json:"created_at"`
+	ID        int32     `json:"id"`
+	Name      string    `json:"name"`
+	Link      string    `json:"link"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ShopsCategory struct {
-	ID   int32          `json:"id"`
-	Name string         `json:"name"`
-	Link sql.NullString `json:"link"`
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+	Link string `json:"link"`
 }
 
 type ShopsShopsCategory struct {

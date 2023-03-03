@@ -1,7 +1,7 @@
 CREATE TABLE "shops_categories" (
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
-  "link" varchar
+  "link" varchar NOT NULL
 );
 
 CREATE TABLE "shops_shops_categories" (
@@ -12,15 +12,15 @@ CREATE TABLE "shops_shops_categories" (
 CREATE TABLE "shops" (
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
-  "link" varchar,
+  "link" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "products_categories" (
-  "shop_id" int,
+  "shop_id" int NOT NULL,
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
-  "link" varchar
+  "link" varchar NOT NULL
 );
 
 CREATE TABLE "products_products_categories" (

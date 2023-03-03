@@ -161,7 +161,9 @@ func RemoveProduct(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 
 		err = app.Store.DeleteProduct(r.Context(), int32(productId))
 		if err != nil {
+			app.Logger.Error(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 	}
 }
@@ -174,18 +176,109 @@ type CreateCategoryReq struct {
 
 func CreateCategory(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		dto := r.Context().Value("body").(*CreateCategoryReq)
 
+		_, err := app.Store.GetShop(r.Context(), dto.ShopId)
+		if err != nil {
+			app.Logger.Error(err)
+			if err == sql.ErrNoRows {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		category, err := app.Store.CreateProductsCategory(r.Context(), db.CreateProductsCategoryParams{
+			Name:   dto.Name,
+			Link:   dto.Link,
+			ShopID: dto.ShopId,
+		})
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(category)
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(data)
 	}
 }
 
 func RemoveCategory(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		categoryId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			app.Logger.Error(err)
+			response := api_errors.CreateBadRequestError([]string{"Id must be a number"})
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(response)
+			return
+		}
 
+		err = app.Store.DeleteProductsCategoriesRelationshipByProductCategoryId(r.Context(), int32(categoryId))
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.Store.DeleteProductsCategory(r.Context(), int32(categoryId))
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
 func GetCategories(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var limit uint8 = 10
+		var offset uint64 = 0
 
+		query := r.URL.Query()
+		limitParam := query.Get("limit")
+		if len(limitParam) != 0 {
+			newLimit, err := strconv.ParseUint(limitParam, 10, 64)
+			if err != nil {
+				response := api_errors.CreateBadRequestError([]string{"wrong limit"})
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(response)
+				return
+			}
+			if newLimit > 30 {
+				response := api_errors.CreateBadRequestError([]string{"limit must be lower than 30"})
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(response)
+				return
+			}
+			limit = uint8(newLimit)
+		}
+
+		categories, err := app.Store.GetProductsCategories(r.Context(), db.GetProductsCategoriesParams{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		})
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(categories)
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(data)
 	}
 }

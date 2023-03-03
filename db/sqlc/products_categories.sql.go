@@ -9,6 +9,34 @@ import (
 	"context"
 )
 
+const createProductsCategory = `-- name: CreateProductsCategory :one
+INSERT INTO products_categories (
+  name,
+  link,
+  shop_id
+) VALUES (
+  $1, $2, $3
+) RETURNING shop_id, id, name, link
+`
+
+type CreateProductsCategoryParams struct {
+	Name   string `json:"name"`
+	Link   string `json:"link"`
+	ShopID int32  `json:"shop_id"`
+}
+
+func (q *Queries) CreateProductsCategory(ctx context.Context, arg CreateProductsCategoryParams) (ProductsCategory, error) {
+	row := q.db.QueryRowContext(ctx, createProductsCategory, arg.Name, arg.Link, arg.ShopID)
+	var i ProductsCategory
+	err := row.Scan(
+		&i.ShopID,
+		&i.ID,
+		&i.Name,
+		&i.Link,
+	)
+	return i, err
+}
+
 const deleteProductsCategoriesRelationshipByProductCategoryId = `-- name: DeleteProductsCategoriesRelationshipByProductCategoryId :exec
 DELETE FROM products_products_categories WHERE product_category_id = $1
 `
@@ -25,6 +53,55 @@ DELETE FROM products_products_categories WHERE product_id = $1
 func (q *Queries) DeleteProductsCategoriesRelationshipByProductId(ctx context.Context, productID int32) error {
 	_, err := q.db.ExecContext(ctx, deleteProductsCategoriesRelationshipByProductId, productID)
 	return err
+}
+
+const deleteProductsCategory = `-- name: DeleteProductsCategory :exec
+DELETE FROM products_categories WHERE id = $1
+`
+
+func (q *Queries) DeleteProductsCategory(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteProductsCategory, id)
+	return err
+}
+
+const getProductsCategories = `-- name: GetProductsCategories :many
+SELECT shop_id, id, name, link FROM products_categories
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type GetProductsCategoriesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetProductsCategories(ctx context.Context, arg GetProductsCategoriesParams) ([]ProductsCategory, error) {
+	rows, err := q.db.QueryContext(ctx, getProductsCategories, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ProductsCategory{}
+	for rows.Next() {
+		var i ProductsCategory
+		if err := rows.Scan(
+			&i.ShopID,
+			&i.ID,
+			&i.Name,
+			&i.Link,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertNewProductsCategoriesRelationship = `-- name: InsertNewProductsCategoriesRelationship :one

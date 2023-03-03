@@ -6,6 +6,9 @@ import (
 	"github.com/danilluk1/test-task-6/internal/app/api"
 )
 
+type CreateShopReq struct {
+}
+
 func CreateShop(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 

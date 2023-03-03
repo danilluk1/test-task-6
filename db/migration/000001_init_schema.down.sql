@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS shops_shops_categories CASCADE;
-DROP TABLE IF EXISTS shops_categories;
+DROP TABLE IF EXISTS shops_categories CASCADE;
 DROP TABLE IF EXISTS shops;
 
 DROP TABLE IF EXISTS products_products_categories;
