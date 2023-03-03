@@ -42,6 +42,27 @@ func (q *Queries) GetShopCategory(ctx context.Context, id int32) (ShopsCategory,
 	return i, err
 }
 
+const insertNewShopCategoriesRelationship = `-- name: InsertNewShopCategoriesRelationship :one
+INSERT INTO shops_shops_categories(
+  shop_category_id,
+  shop_id
+) VALUES (
+  $1, $2
+) RETURNING shop_category_id, shop_id
+`
+
+type InsertNewShopCategoriesRelationshipParams struct {
+	ShopCategoryID int32 `json:"shop_category_id"`
+	ShopID         int32 `json:"shop_id"`
+}
+
+func (q *Queries) InsertNewShopCategoriesRelationship(ctx context.Context, arg InsertNewShopCategoriesRelationshipParams) (ShopsShopsCategory, error) {
+	row := q.db.QueryRowContext(ctx, insertNewShopCategoriesRelationship, arg.ShopCategoryID, arg.ShopID)
+	var i ShopsShopsCategory
+	err := row.Scan(&i.ShopCategoryID, &i.ShopID)
+	return i, err
+}
+
 const listShopsCategories = `-- name: ListShopsCategories :many
 SELECT id, name, link FROM shops_categories
 ORDER BY shop_category_id

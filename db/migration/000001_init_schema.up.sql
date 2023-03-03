@@ -5,8 +5,8 @@ CREATE TABLE "shops_categories" (
 );
 
 CREATE TABLE "shops_shops_categories" (
-  "shop_category_id" int,
-  "shop_id" int
+  "shop_category_id" int NOT NULL,
+  "shop_id" int NOT NULL
 );
 
 CREATE TABLE "shops" (

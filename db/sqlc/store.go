@@ -11,6 +11,7 @@ import (
 type Store interface {
 	Querier
 	ProductTx(ctx context.Context, arg ProductTxParams) (ProductTxResult, error)
+	ShopTx(ctx context.Context, arg ShopTxParams) (ShopTxResult, error)
 }
 
 type SQLStore struct {
@@ -80,4 +81,40 @@ func (store *SQLStore) ProductTx(ctx context.Context, arg ProductTxParams) (Prod
 	})
 
 	return ProductTxResult{}, err
+}
+
+type ShopTxParams struct {
+	Name            string  `json:"name"`
+	Link            string  `json:"link"`
+	ShopsCategories []int32 `json:"products_categories"`
+}
+
+type ShopTxResult struct {
+}
+
+func (store *SQLStore) ShopTx(ctx context.Context, arg ShopTxParams) (ShopTxResult, error) {
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+		shop, err := q.CreateShop(ctx, CreateShopParams{
+			Name: arg.Name,
+			Link: arg.Link,
+		})
+		if err != nil {
+			return err
+		}
+
+		for _, category := range arg.ShopsCategories {
+			_, err = q.InsertNewShopCategoriesRelationship(ctx, InsertNewShopCategoriesRelationshipParams{
+				ShopCategoryID: category,
+				ShopID:         shop.ID,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return ShopTxResult{}, err
 }

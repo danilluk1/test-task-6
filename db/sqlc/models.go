@@ -5,7 +5,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -43,6 +42,6 @@ type ShopsCategory struct {
 }
 
 type ShopsShopsCategory struct {
-	ShopCategoryID sql.NullInt32 `json:"shop_category_id"`
-	ShopID         sql.NullInt32 `json:"shop_id"`
+	ShopCategoryID int32 `json:"shop_category_id"`
+	ShopID         int32 `json:"shop_id"`
 }

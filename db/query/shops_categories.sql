@@ -21,3 +21,11 @@ UPDATE shops_categories
 SET name = $2
 WHERE id = $1
 RETURNING *;
+
+-- name: InsertNewShopCategoriesRelationship :one
+INSERT INTO shops_shops_categories(
+  shop_category_id,
+  shop_id
+) VALUES (
+  $1, $2
+) RETURNING *;

@@ -22,6 +22,7 @@ type Querier interface {
 	GetShop(ctx context.Context, id int32) (Shop, error)
 	GetShopCategory(ctx context.Context, id int32) (ShopsCategory, error)
 	InsertNewProductsCategoriesRelationship(ctx context.Context, arg InsertNewProductsCategoriesRelationshipParams) (ProductsProductsCategory, error)
+	InsertNewShopCategoriesRelationship(ctx context.Context, arg InsertNewShopCategoriesRelationshipParams) (ShopsShopsCategory, error)
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)
 	ListShops(ctx context.Context, arg ListShopsParams) ([]Shop, error)
 	ListShopsCategories(ctx context.Context, arg ListShopsCategoriesParams) ([]ShopsCategory, error)
