@@ -12,6 +12,7 @@ type Querier interface {
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
 	CreateShop(ctx context.Context, arg CreateShopParams) (Shop, error)
 	CreateShopCategory(ctx context.Context, arg CreateShopCategoryParams) (ShopsCategory, error)
+	DeleteProduct(ctx context.Context, id int32) error
 	DeleteProductsCategoriesRelationshipByProductCategoryId(ctx context.Context, productCategoryID int32) error
 	DeleteProductsCategoriesRelationshipByProductId(ctx context.Context, productID int32) error
 	GetProduct(ctx context.Context, id int32) (Product, error)

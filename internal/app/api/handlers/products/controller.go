@@ -130,5 +130,62 @@ func GetProducts(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func RemoveProduct(app *api.App) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			app.Logger.Error(err)
+			response := api_errors.CreateBadRequestError([]string{"Id must be a number"})
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(response)
+			return
+		}
+
+		_, err = app.Store.GetProduct(r.Context(), int32(productId))
+		if err != nil {
+			app.Logger.Error(err)
+			if err == sql.ErrNoRows {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.Store.DeleteProductsCategoriesRelationshipByProductId(r.Context(), int32(productId))
+		if err != nil {
+			app.Logger.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.Store.DeleteProduct(r.Context(), int32(productId))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}
+}
+
 type CreateCategoryReq struct {
+	Name   string `json:"name" validate:"required,min=5,max=200"`
+	Link   string `json:"link" validate:"required"`
+	ShopId int32  `json:"shop_id" validate:"required"`
+}
+
+func CreateCategory(app *api.App) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func RemoveCategory(app *api.App) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func GetCategories(app *api.App) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
 }
