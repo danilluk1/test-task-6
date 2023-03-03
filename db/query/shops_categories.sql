@@ -10,9 +10,9 @@ INSERT INTO shops_categories (
 SELECT * FROM shops_categories
 WHERE id = $1 LIMIT 1;
 
--- name: ListShopsCategories :many
+-- name: GetShopsCategories :many
 SELECT * FROM shops_categories
-ORDER BY shop_category_id
+ORDER BY id
 LIMIT $1
 OFFSET $2;
 
@@ -29,3 +29,12 @@ INSERT INTO shops_shops_categories(
 ) VALUES (
   $1, $2
 ) RETURNING *;
+
+-- name: DeleteShopsCategoriesRelationshipByShopId :exec
+DELETE FROM shops_shops_categories WHERE shop_id = $1;
+
+-- name: DeleteShopsCategoriesRelationshipByShopsCategoryId :exec
+DELETE FROM shops_shops_categories WHERE shop_category_id = $1;
+
+-- name: DeleteShopsCategory :exec
+DELETE FROM shops_categories WHERE id = $1;

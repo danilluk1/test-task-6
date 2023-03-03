@@ -21,3 +21,7 @@ UPDATE shops
 SET name = $2
 WHERE id = $1
 RETURNING *;
+
+-- name: DeleteShop :exec
+DELETE FROM shops
+WHERE id = $1;

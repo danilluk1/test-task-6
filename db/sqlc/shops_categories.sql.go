@@ -30,6 +30,33 @@ func (q *Queries) CreateShopCategory(ctx context.Context, arg CreateShopCategory
 	return i, err
 }
 
+const deleteShopsCategoriesRelationshipByShopId = `-- name: DeleteShopsCategoriesRelationshipByShopId :exec
+DELETE FROM shops_shops_categories WHERE shop_id = $1
+`
+
+func (q *Queries) DeleteShopsCategoriesRelationshipByShopId(ctx context.Context, shopID int32) error {
+	_, err := q.db.ExecContext(ctx, deleteShopsCategoriesRelationshipByShopId, shopID)
+	return err
+}
+
+const deleteShopsCategoriesRelationshipByShopsCategoryId = `-- name: DeleteShopsCategoriesRelationshipByShopsCategoryId :exec
+DELETE FROM shops_shops_categories WHERE shop_category_id = $1
+`
+
+func (q *Queries) DeleteShopsCategoriesRelationshipByShopsCategoryId(ctx context.Context, shopCategoryID int32) error {
+	_, err := q.db.ExecContext(ctx, deleteShopsCategoriesRelationshipByShopsCategoryId, shopCategoryID)
+	return err
+}
+
+const deleteShopsCategory = `-- name: DeleteShopsCategory :exec
+DELETE FROM shops_categories WHERE id = $1
+`
+
+func (q *Queries) DeleteShopsCategory(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteShopsCategory, id)
+	return err
+}
+
 const getShopCategory = `-- name: GetShopCategory :one
 SELECT id, name, link FROM shops_categories
 WHERE id = $1 LIMIT 1
@@ -40,6 +67,41 @@ func (q *Queries) GetShopCategory(ctx context.Context, id int32) (ShopsCategory,
 	var i ShopsCategory
 	err := row.Scan(&i.ID, &i.Name, &i.Link)
 	return i, err
+}
+
+const getShopsCategories = `-- name: GetShopsCategories :many
+SELECT id, name, link FROM shops_categories
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type GetShopsCategoriesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetShopsCategories(ctx context.Context, arg GetShopsCategoriesParams) ([]ShopsCategory, error) {
+	rows, err := q.db.QueryContext(ctx, getShopsCategories, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ShopsCategory{}
+	for rows.Next() {
+		var i ShopsCategory
+		if err := rows.Scan(&i.ID, &i.Name, &i.Link); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertNewShopCategoriesRelationship = `-- name: InsertNewShopCategoriesRelationship :one
@@ -61,41 +123,6 @@ func (q *Queries) InsertNewShopCategoriesRelationship(ctx context.Context, arg I
 	var i ShopsShopsCategory
 	err := row.Scan(&i.ShopCategoryID, &i.ShopID)
 	return i, err
-}
-
-const listShopsCategories = `-- name: ListShopsCategories :many
-SELECT id, name, link FROM shops_categories
-ORDER BY shop_category_id
-LIMIT $1
-OFFSET $2
-`
-
-type ListShopsCategoriesParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-func (q *Queries) ListShopsCategories(ctx context.Context, arg ListShopsCategoriesParams) ([]ShopsCategory, error) {
-	rows, err := q.db.QueryContext(ctx, listShopsCategories, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ShopsCategory{}
-	for rows.Next() {
-		var i ShopsCategory
-		if err := rows.Scan(&i.ID, &i.Name, &i.Link); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const updateShopCategory = `-- name: UpdateShopCategory :one

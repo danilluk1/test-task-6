@@ -35,6 +35,16 @@ func (q *Queries) CreateShop(ctx context.Context, arg CreateShopParams) (Shop, e
 	return i, err
 }
 
+const deleteShop = `-- name: DeleteShop :exec
+DELETE FROM shops
+WHERE id = $1
+`
+
+func (q *Queries) DeleteShop(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteShop, id)
+	return err
+}
+
 const getShop = `-- name: GetShop :one
 SELECT id, name, link, created_at FROM shops
 WHERE id = $1 LIMIT 1

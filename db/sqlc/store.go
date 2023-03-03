@@ -66,7 +66,6 @@ func (store *SQLStore) ProductTx(ctx context.Context, arg ProductTxParams) (Prod
 		if err != nil {
 			return err
 		}
-
 		for _, category := range arg.ProductsCategories {
 			_, err = q.InsertNewProductsCategoriesRelationship(ctx, InsertNewProductsCategoriesRelationshipParams{
 				ProductCategoryID: category,

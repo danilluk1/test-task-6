@@ -17,7 +17,7 @@ CREATE TABLE "shops" (
 );
 
 CREATE TABLE "products_categories" (
-  "shop_id" int NOT NULL,
+  "shop_id" int,
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
   "link" varchar NOT NULL
@@ -32,7 +32,7 @@ CREATE TABLE "products" (
   "id" serial PRIMARY KEY,
   "name" varchar NOT NULL,
   "links" varchar[],
-  "price" decimal NOT NULL,
+  "price" decimal,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -46,6 +46,6 @@ ALTER TABLE "shops_shops_categories" ADD FOREIGN KEY ("shop_id") REFERENCES "sho
 
 ALTER TABLE "products_categories" ADD FOREIGN KEY ("shop_id") REFERENCES "shops" ("id");
 
-ALTER TABLE "products_products_categories" ADD FOREIGN KEY ("product_category_id") REFERENCES "products" ("id");
+ALTER TABLE "products_products_categories" ADD FOREIGN KEY ("product_category_id") REFERENCES "products_categories" ("id");
 
-ALTER TABLE "products_products_categories" ADD FOREIGN KEY ("product_id") REFERENCES "products_categories" ("id");
+ALTER TABLE "products_products_categories" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
