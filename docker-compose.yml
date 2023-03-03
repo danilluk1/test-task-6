@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    env_file:
+      - .env.docker
+  postgres:
+      image: postgres:15-alpine
+      volumes:
+        - postgres-data:/var/lib/postgresql/data
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=admin
+        - POSTGRES_DB=test_task_6
+      ports:
+        - 5432:5432
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8085:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres:5432
+      - ADMINER_PLUGINS=enum-types enum-option json-column
+  migrations:
+    image: migrate/migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db/migration:/migration
+    env_file:
+      - .env.docker
+    command: "-path=/migration/ -database postgres://postgres:admin@postgres:5432/test_task_6?sslmode=disable up"
+volumes:
+  postgres-data:
